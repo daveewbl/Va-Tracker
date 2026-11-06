@@ -13,3 +13,28 @@
 /outputs/
 /data-private/
 *.log
+
+# Dipendenze, cache e build Laravel
+/vendor
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/public/css/filament
+/public/fonts/filament
+/public/fonts-manifest.dev.json
+/public/js/filament
+/database/*.sqlite
+/database/*.sqlite-*
+/database/*.sqlite3
+/database/*.sqlite3-*
+/database/*.db
+/database/*.db-*
+/.phpunit.cache
+/.phpunit.result.cache
+
+# Credenziali Composer e configurazioni specifiche della macchina
+/auth.json
+/.junie/mcp/mcp.json

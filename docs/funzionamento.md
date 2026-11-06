@@ -2,7 +2,7 @@
 
 Stato: specifica funzionale iniziale concordata nel brainstorming del 6 novembre 2026.
 
-Le decisioni confermate sono descritte nelle sezioni principali. I dettagli che richiedono ancora una scelta sono raccolti alla fine. Il documento non sceglie uno stack tecnologico e non descrive un'applicazione già implementata.
+Le decisioni confermate sono descritte nelle sezioni principali. I dettagli che richiedono ancora una scelta sono raccolti alla fine. Le scelte di implementazione sono descritte nello [stack tecnico](stack-tecnico.md) e la struttura concettuale nella [struttura dati](struttura-dati.md). Lo scaffolding tecnico è presente; le funzioni del PAC sono ancora da implementare.
 
 ## 1. Scopo
 
@@ -88,11 +88,11 @@ La formula vale anche per il primo investimento: se le quote possedute sono zero
 La quantità calcolata viene proposta all'utente, che può confermare le quote effettivamente acquistate. Se l'eseguito differisce dalla proposta, lo storico deve rappresentare l'eseguito.
 
 ```text
-Aeffettivo = Qeffettive × Peseguito
+Aeffettivo = Qeffettive × P
 Qdopo = Qprima + Qeffettive
 ```
 
-Il dettaglio dei campi per distinguere prezzo di rilevazione e prezzo effettivo di esecuzione è ancora da definire. Negli esempi numerici i due prezzi coincidono.
+Nella prima versione si usa un unico prezzo per rilevazione e acquisto. Il prezzo conserva fino a sei decimali; i risultati monetari finali vengono arrotondati ai centesimi con metà verso l'alto, mantenendo prima la precisione richiesta dai calcoli. Le commissioni sono escluse dalla prima versione.
 
 ## 5. Segnalazioni informative
 
@@ -139,11 +139,11 @@ Per ciascun PAC, il valore indicativo dei titoli è calcolabile automaticamente:
 ValoreTitoli = QuotePossedute × UltimoPrezzoInserito
 ```
 
-Il calcolo richiede quantità effettive attendibili. La dashboard mostra la data del prezzo usato: il valore è riferito all'ultima rilevazione, non è una quotazione in tempo reale.
+Il calcolo richiede quantità effettive attendibili. La quotazione corrente è conservata sul titolo e condivisa da tutti i PAC associati a quel titolo. La dashboard mostra la data del prezzo usato: il valore è riferito all'ultima quotazione inserita, non è una quotazione in tempo reale. Il prezzo storico di ciascuna rilevazione mensile rimane invariato.
 
 Un aggiornamento del solo prezzo serve a rivalutare la posizione. Non crea un investimento, non consuma la registrazione mensile e non incrementa la liquidità virtuale.
 
-Il confronto VA usa il valore dei titoli **prima** dell'acquisto, escludendo la liquidità virtuale. La vista del PAC può mostrare anche il valore dopo l'acquisto. A parità di prezzo, quest'ultimo è `Vprima + Aeffettivo`, prima delle eventuali commissioni.
+Il confronto VA usa il valore dei titoli **prima** dell'acquisto, escludendo la liquidità virtuale. La vista del PAC può mostrare anche il valore dopo l'acquisto. A parità di prezzo, quest'ultimo è `Vprima + Aeffettivo`.
 
 La panoramica riporta almeno quote possedute, capitale effettivamente investito, valore indicativo dei titoli, obiettivo cumulativo, liquidità virtuale e storico delle registrazioni. Il capitale investito non comprende gli incrementi del contatore virtuale.
 
@@ -172,7 +172,7 @@ Il formato supportato e il trattamento di dati mancanti o incompatibili verranno
 
 Si parte da una fotografia della posizione esistente: data di riferimento, quote possedute, capitale già investito e liquidità virtuale già accumulata.
 
-L'obiettivo cumulativo alla data di riferimento viene calcolato dalla data originale di inizio e dall'incremento mensile, per il tratto a incremento costante rappresentato dal PAC. Il primo periodo registrato dopo l'apertura deve usare il successivo obiettivo corretto, senza contare due volte un mese già compreso nella situazione iniziale.
+L'obiettivo cumulativo alla data di riferimento viene calcolato dalla data originale di inizio e dall'incremento mensile, per il tratto a incremento costante rappresentato dal PAC. Il mese del saldo iniziale è l'ultimo mese già coperto dalla posizione inserita: le nuove registrazioni partono dal mese successivo, senza contare due volte il mese già compreso nella situazione iniziale. Quote, capitale investito e liquidità virtuale di apertura si riferiscono tutti allo stesso mese coperto.
 
 La fotografia è un **saldo di apertura**, distinto da un nuovo acquisto. Non genera un investimento fittizio né un nuovo incremento della liquidità virtuale.
 
@@ -214,16 +214,13 @@ Non vengono sostituite le quantità realmente acquistate nelle altre registrazio
 
 Questi punti non modificano le decisioni confermate e non sono requisiti già approvati:
 
-- Distinzione fra prezzo di rilevazione e prezzo di esecuzione; eventuali commissioni e loro inclusione nel capitale investito.
-- Numero di decimali ammessi e momento dell'arrotondamento monetario. I prezzi non dovranno perdere precisione solo perché gli importi vengono visualizzati in euro con due decimali.
 - Possibilità di eliminare l'ultima registrazione. Al momento è confermata solo la sua modificabilità, mentre lo storico precedente resta bloccato.
 - Inserimento retroattivo di un mese mancante quando esistono già registrazioni successive: non deve introdurre implicitamente una riscrittura dello storico bloccato.
 - Formato di importazione, gestione delle anomalie e possibile riconciliazione di uno storico importato dopo un saldo di apertura, rispettando il vincolo sullo storico.
-- Campi identificativi del titolo, valute e perimetro iniziale degli strumenti. Un titolo per PAC, importi in euro e identificazione tramite ticker o ISIN sono la proposta iniziale.
+- Identificativi obbligatori del titolo, gestione dei duplicati e perimetro iniziale delle valute e degli strumenti. Sono confermati un titolo per PAC e il catalogo condiviso fra più PAC; ticker e ISIN sono gli identificativi proposti.
 - Dettaglio delle viste e dei grafici. Una vista con storico e confronto tra valore dei titoli e obiettivo è stata proposta nel brainstorming.
 - Esportazione e ripristino completo dei dati, proposti come funzionalità di conservazione dello storico; formati e comportamento devono essere concordati.
-- Stack tecnologico, modalità di accesso, persistenza e distribuzione dell'applicazione.
 
 ## 12. Confine della prima fase
 
-La fase attuale documenta il funzionamento. La scelta tecnologica precederà l'implementazione. Collegamenti a broker, esecuzione automatica di ordini e quotazioni automatiche non sono stati concordati.
+La fase attuale documenta il funzionamento e le scelte dello [stack tecnico](stack-tecnico.md): applicazione locale con Herd, Filament con tema dedicato e SQLite iniziale, con possibile passaggio a MySQL in presenza di limiti concreti. La base tecnica è predisposta; l'implementazione del dominio PAC seguirà la progettazione dettagliata dei dati e dei flussi. Collegamenti a broker, esecuzione automatica di ordini e quotazioni automatiche non sono stati concordati.

@@ -6,19 +6,21 @@ Il progetto registra gli investimenti effettuati, calcola le quantità proposte 
 
 ## Stato del progetto
 
-Al 6 novembre 2026 è stato concordato il funzionamento principale. Questo repository contiene la documentazione iniziale; lo stack tecnologico e l'implementazione devono ancora essere definiti.
+Al 6 novembre 2026 sono stati concordati il funzionamento principale, lo stack tecnologico e la struttura concettuale dei dati. Lo scaffolding Laravel/Filament è presente; schema e flussi del dominio PAC sono ancora in progettazione.
 
 ## Documentazione
 
 - [Funzionamento concordato](docs/funzionamento.md): terminologia, calcoli, registrazioni, liquidità virtuale, avvio e prosecuzione dei PAC, vincoli sullo storico e dettagli ancora da definire.
 - [Esempi e scenari funzionali](docs/scenari.md): casi numerici e comportamenti attesi da usare come riferimento durante la progettazione e l'implementazione.
+- [Stack tecnico](docs/stack-tecnico.md): componenti, persistenza, precisione dei dati economici, convenzioni Laravel e strumenti di sviluppo.
+- [Struttura dati](docs/struttura-dati.md): titolo condiviso, PAC, situazione di apertura, rilevazioni mensili e quotazioni.
 
 La specifica funzionale è il riferimento per le regole del prodotto. Gli esempi la illustrano senza introdurre regole aggiuntive.
 
 ## Percorso di lavoro
 
 1. Completare gli eventuali dettagli funzionali rimasti aperti.
-2. Concordare stack tecnologico, persistenza dei dati e modalità di utilizzo.
+2. Progettare lo schema dei dati e verificare le dipendenze dello stack concordato.
 3. Implementare la prima versione essenziale.
 
 ## Riferimenti
