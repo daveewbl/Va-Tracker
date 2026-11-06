@@ -1,0 +1,15 @@
+# File locali del sistema operativo
+.DS_Store
+._*
+
+# Configurazioni locali e segreti
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Analisi temporanee, esportazioni e dati personali locali
+/work/
+/outputs/
+/data-private/
+*.log
